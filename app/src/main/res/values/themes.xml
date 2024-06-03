@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.ConnectSalud" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/yellow</item>
+
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/black</item>
+
+    </style>
+
+    <style name="Theme.ConnectSalud" parent="Base.Theme.ConnectSalud" />
+</resources>

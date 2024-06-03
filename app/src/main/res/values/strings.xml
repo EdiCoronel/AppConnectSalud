@@ -1,0 +1,92 @@
+<resources>
+    <string name="app_name">ConnectSalud</string>
+    <string name="text_welcome">Bienvenido</string>
+    <string name="text_message1">Completa con tus datos para ingresar</string>
+    <string name="input_email">Email</string>
+    <string name="input_pass">Contraseña</string>
+    <string name="input_passagain">Repite Contraseña</string>
+    <string name="button_login">Iniciar Sesión</string>
+    <string name="img_logo">Imagen del logo</string>
+    <string name="button_passforgot">¿Olvidó su contraseña?</string>
+    <string name="button_register">Registrarse</string>
+    <string name="button_perfil">Mi Perfil</string>
+    <string name="button_reserve">Reservar Turno</string>
+    <string name="button_profesionales">Profesionales</string>
+    <string name="button_turnos">Mis Turnos</string>
+    <string name="button_cerrar_sesion">Cerrar Sesion</string>
+
+    <!-- Registro -->
+    <string name="text_message2">Completa el formulario para registrarte</string>
+    <string name="agregardnipaciente">DNI</string>
+    <string name="agregarnombrepaciente">Nombre</string>
+    <string name="agregarapellidopaciente">Apellido</string>
+    <string name="agregartelefonopaciente">Teléfono</string>
+    <string name="agregarnacimientopaciente">Fecha de Nacimiento</string>
+    <string name="agregarmailpaciente">Email</string>
+    <string name="agregarpasspaciente">Contraseña</string>
+    <string name="agregarpassagainpaciente">Repite Contraseña</string>
+    <string name="button_registro">Registrarme</string>
+
+    <!-- Sacar turno -->
+    <string name="text_message_especialidad">Selecciona una especialidad</string>
+    <string name="text_message_profesional">Selecciona un profesional</string>
+    <string name="text_message_diahora">Selecciona un día y horario</string>
+
+    <string name="especialidad1">Nutrición</string>
+    <string name="especialidad2">Endocrinología</string>
+    <string name="especialidad3">Clínica médica</string>
+    <string name="especialidad4">Psicología</string>
+
+    <string name="profesionales1">Dra. Agustina Castillo</string>
+    <string name="profesionales2">Dra. Gabriela Durán</string>
+    <string name="profesionales3">Dr. Florencia Yodice</string>
+    <string name="profesionales4">Dr. Walter Padilla</string>
+    <string name="profesionales5">Dra. Sofía Roldán</string>
+    <string name="profesionales6">Dr. Carlos Toibero</string>
+    <string name="profesionales7">Dr. Omar Chiarulli</string>
+    <string name="profesionales8">Dra. Melina Orsi</string>
+
+    <string name="time0900">09:00</string>
+    <string name="time0930">09:30</string>
+    <string name="time1000">10:00</string>
+    <string name="time1030">10:30</string>
+    <string name="time1100">11:00</string>
+    <string name="time1130">11:30</string>
+
+    <!-- Sipnner especialidad -->
+    <string name="spn_title_esp">Selecciona una especialidad</string>
+    <string-array name="item_esp">
+        <item>Especialidades</item>
+        <item>Nutrición</item>
+        <item>Endocrinología</item>
+        <item>Clínica médica</item>
+        <item>Psicología</item>
+    </string-array>
+
+    <!-- Sipnner profesional -->
+    <string name="spn_title_prof">Selecciona un profesional</string>
+    <string-array name="item_prof">
+        <item>Profesionales</item>
+        <item>Dra. Agustina Castillo</item>
+        <item>Dr. Walter Padilla</item>
+        <item>Dra. Sofía Roldán</item>
+        <item>Dr. Carlos Toibero</item>
+
+    </string-array>
+
+    <string name="text_message4">Lista de profesionales disponibles</string>
+    <string name="especialidad">Especialidad</string>
+    <string name="profesional">Profesionales</string>
+
+    <!-- Perfil-->
+    <string name="dni">DNI</string>
+    <string name="nombre">Nombre</string>
+    <string name="apellido">Apellido</string>
+    <string name="telefono">Teléfono</string>
+    <string name="fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="email">Ingresar el email</string>
+    <string name="button_editar">Editar</string>
+    <string name="button_guardar">Guardar</string>
+
+
+</resources>
