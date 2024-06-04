@@ -13,6 +13,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+
+import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +34,93 @@ public class MainActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.input_pass1);
         databaseHelper = new AdminSQLiteOpenHelper(this);
         sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+
+        // Ocultar campos de email y contraseña hasta que la autenticación biométrica falle
+        emailEditText.setVisibility(View.GONE);
+        passwordEditText.setVisibility(View.GONE);
+
+        // Verificar el soporte de biometría y mostrar el prompt
+        checkBiometricSupport();
+    }
+
+    private void checkBiometricSupport() {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        switch (biometricManager.canAuthenticate()) {
+            case BiometricManager.BIOMETRIC_SUCCESS:
+                // El dispositivo puede autenticar con biometría, mostrar el prompt
+                showBiometricPrompt();
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+                Toast.makeText(this, "El dispositivo no tiene hardware biométrico", Toast.LENGTH_SHORT).show();
+                showEmailPasswordFields();
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                Toast.makeText(this, "El hardware biométrico no está disponible actualmente", Toast.LENGTH_SHORT).show();
+                showEmailPasswordFields();
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                Toast.makeText(this, "No hay biometría enrollada", Toast.LENGTH_SHORT).show();
+                showEmailPasswordFields();
+                break;
+        }
+    }
+
+    private void showBiometricPrompt() {
+        Executor executor = ContextCompat.getMainExecutor(this);
+        BiometricPrompt biometricPrompt = new BiometricPrompt(MainActivity.this,
+                executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(MainActivity.this, "Error de autenticación: " + errString, Toast.LENGTH_SHORT).show();
+                showEmailPasswordFields();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                // La autenticación fue exitosa, proceder al inicio de sesión automático
+                proceedWithLogin();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(MainActivity.this, "Autenticación fallida", Toast.LENGTH_SHORT).show();
+                showEmailPasswordFields();
+            }
+        });
+
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Autenticación Biométrica")
+                .setSubtitle("Inicia sesión usando tu huella digital o reconocimiento facial")
+                .setNegativeButtonText("Cancelar")
+                .build();
+
+        biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void showEmailPasswordFields() {
+        emailEditText.setVisibility(View.VISIBLE);
+        passwordEditText.setVisibility(View.VISIBLE);
+    }
+
+    private void proceedWithLogin() {
+        long pacienteId = getPacienteIdFromPreferences();
+
+        if (pacienteId != -1) {
+            Intent intent = new Intent(this, Home.class);
+            intent.putExtra("PACIENTE_ID", pacienteId);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "No se encontró un ID de paciente válido", Toast.LENGTH_SHORT).show();
+            showEmailPasswordFields();
+        }
+    }
+
+    private long getPacienteIdFromPreferences() {
+        return sharedPreferences.getLong("PACIENTE_ID", -1);
     }
 
     public void launchHome(View view) {
@@ -36,26 +128,21 @@ public class MainActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
 
         if (isValidEmail(email) && isValidPassword(password)) {
-            // Obtener el ID del paciente desde la base de datos
             long pacienteId = obtenerPacienteIdDesdeBaseDeDatos(email, password);
 
             if (pacienteId != -1) {
-                // Guardar el ID del paciente en SharedPreferences
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putLong("PACIENTE_ID", pacienteId);
                 editor.apply();
 
-                // Credenciales válidas, iniciar la actividad Home con el ID del paciente como extra
                 Intent intent = new Intent(this, Home.class);
                 intent.putExtra("PACIENTE_ID", pacienteId);
                 startActivity(intent);
-                finish(); // Para evitar que el usuario vuelva atrás presionando el botón de retroceso
+                finish();
             } else {
-                // Credenciales inválidas, mostrar un mensaje de error
                 Toast.makeText(this, "Credenciales inválidas. Inténtalo de nuevo.", Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Credenciales inválidas, mostrar un mensaje de error
             Toast.makeText(this, "Credenciales inválidas. Inténtalo de nuevo.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -65,8 +152,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isValidPassword(String password) {
-        // Implementa tu lógica de validación de contraseña aquí
-        // Por ejemplo, puedes verificar si la contraseña tiene una longitud mínima
         return password.length() >= 8;
     }
 
@@ -77,16 +162,16 @@ public class MainActivity extends AppCompatActivity {
         String[] selectionArgs = { email, password };
 
         Cursor cursor = db.query(
-                "usuarios",   // Nombre de la tabla
-                projection,   // Columnas que quieres recuperar
-                selection,    // Clausula WHERE
-                selectionArgs,// Valores de la clausula WHERE
-                null,         // No agrupar las filas
-                null,         // No filtrar por grupos de filas
-                null          // No ordenar las filas
+                "usuarios",
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
         );
 
-        long pacienteId = -1; // Valor predeterminado si no se encuentra el paciente
+        long pacienteId = -1;
 
         if (cursor.moveToFirst()) {
             pacienteId = cursor.getLong(cursor.getColumnIndexOrThrow("dni"));
@@ -102,11 +187,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, RegistroPaciente.class);
         startActivity(intent);
     }
+
     public void launchWebsite(View view) {
-        String url = "https://connectsalud.netlify.app/"; // Cambia esto a tu URL real
+        String url = "https://connectsalud.netlify.app/";
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);
     }
-
 }
